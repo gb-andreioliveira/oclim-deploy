@@ -1,51 +1,39 @@
 pipeline {
   agent any
-  stages {
+  environment {
+      ASGARN = "${sh(script:'terraform output asg_arn', returnStdout: true)}"
+    }
+    stages {
     stage('Deploy App') {
       steps {
-        sh 'pwd'
         dir(path: '/var/lib/jenkins/workspace/oclim-terraform_master@2/provider/deploy_stack') {
           sh 'ls -lah'
-          sh 'terraform apply -auto-approve'
-          sh 'aws elbv2 modify-listener --listener-arn \\"${env.LISTERNERARN}\\" --default-actions \\"[{ "Type": "forward", "Order": 1, "ForwardConfig": { "TargetGroups": [ { "TargetGroupArn": "${env.OLDTGARN}", "Weight": 80 }, { "TargetGroupArn": "${env.NEWTGARN}", "Weight": 20 }, ] } }]\\"'
+          sh 'aws autoscaling set-desired-capacity --auto-scaling-group-name ${env.ASGARN} --desired-capacity 5'
+          sh 'aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${env.ASGARN}'
+          input('Would you like to continue or abort?')
+          sh 'ls -lah'
+          sh 'aws autoscaling set-desired-capacity --auto-scaling-group-name ${env.ASGARN} --desired-capacity 6'
+          sh 'aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${env.ASGARN}'
+          input('Would you like to continue or abort?')
+          sh 'ls -lah'
+          sh 'aws autoscaling set-desired-capacity --auto-scaling-group-name ${env.ASGARN} --desired-capacity 7'
+          sh 'aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${env.ASGARN}'
+          input('Would you like to continue or abort?')
+          sh 'ls -lah'
+          sh 'aws autoscaling set-desired-capacity --auto-scaling-group-name ${env.ASGARN} --desired-capacity 8'
+          sh 'aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${env.ASGARN}'
+          input('Would you like to continue or abort?')
+          }
         }
-
       }
     }
-
-  }
-  environment {
-    LISTERNERARN = "${sh(script:'terraform output listener_arn', returnStdout: true)}"
-    OLDTGARN = "${sh(script:'terraform output old_tg_arn', returnStdout: true)}"
-    NEWTGARN = "${sh(script:'terraform output new_tg_arn', returnStdout: true)}"
   }
   post {
-    failure {
-      dir(path: '/var/lib/jenkins/workspace/oclim-terraform_master@2/provider/deploy_stack') {
-        sh 'pwd'
+    abort {
         sh 'ls -lah'
-        sh 'terraform destroy -auto-approve'
-      }
-
+        sh 'aws autoscaling set-desired-capacity --auto-scaling-group-name ${env.ASGARN} --desired-capacity 4'
+        sh 'aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${env.ASGARN}'
+        sh 'echo "Group has scaled back to original size"'
     }
-
-    unsuccessful {
-      dir(path: '/var/lib/jenkins/workspace/oclim-terraform_master@2/provider/deploy_stack') {
-        sh 'pwd'
-        sh 'ls -lah'
-        sh 'terraform destroy -auto-approve'
-      }
-
-    }
-
-    aborted {
-      dir(path: '/var/lib/jenkins/workspace/oclim-terraform_master@2/provider/deploy_stack') {
-        sh 'pwd'
-        sh 'ls -lah'
-        sh 'terraform destroy -auto-approve'
-      }
-
-    }
-
   }
 }
