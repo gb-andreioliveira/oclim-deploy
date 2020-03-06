@@ -28,11 +28,17 @@ pipeline {
       }
     }
   post {
-    abort {
+    aborted {
         sh 'ls -lah'
         sh 'aws autoscaling set-desired-capacity --auto-scaling-group-name ${env.ASGARN} --desired-capacity 4'
         sh 'aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${env.ASGARN}'
         sh 'echo "Group has scaled back to original size"'
     }
+    failiure {
+            sh 'ls -lah'
+            sh 'aws autoscaling set-desired-capacity --auto-scaling-group-name ${env.ASGARN} --desired-capacity 4'
+            sh 'aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${env.ASGARN}'
+            sh 'echo "Group has scaled back to original size"'
+        }
   }
 }
