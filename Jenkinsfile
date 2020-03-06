@@ -13,7 +13,7 @@ pipeline {
           sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn` --region us-east-1"
           input 'Would you like to continue or abort?'
           sh 'ls -lah'
-          sh "aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity 6"
+          sh "aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity 6 --region us-east-1"
           sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn` --region us-east-1"
           input 'Would you like to continue or abort?'
           sh 'ls -lah'
