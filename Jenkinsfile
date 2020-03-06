@@ -9,7 +9,7 @@ pipeline {
           sh 'ls -lah'
           sh 'export AWS_REGION=us-east-1'
           sh 'terraform output asg_arn'
-          sh 'aws autoscaling set-desired-capacity --auto-scaling-group-name oclim-terraform-app --desired-capacity 5 --region us-east-1'
+          sh 'aws autoscaling set-desired-capacity --auto-scaling-group-name ${env.ASGARN} --desired-capacity 5 --region us-east-1'
           sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${env.ASGARN}"
           input 'Would you like to continue or abort?'
           sh 'ls -lah'
