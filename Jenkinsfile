@@ -9,20 +9,20 @@ pipeline {
           sh 'ls -lah'
           sh 'export AWS_REGION=us-east-1'
           sh 'terraform output asg_arn'
-          sh 'aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity 5'
+          sh 'aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity 5 --region us-east-1'
           sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${env.ASGARN}"
           input 'Would you like to continue or abort?'
           sh 'ls -lah'
           sh "aws autoscaling set-desired-capacity --auto-scaling-group-name ${env.ASGARN} --desired-capacity 6"
-          sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${env.ASGARN}"
+          sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${env.ASGARN} --region us-east-1"
           input 'Would you like to continue or abort?'
           sh 'ls -lah'
-          sh "aws autoscaling set-desired-capacity --auto-scaling-group-name ${env.ASGARN} --desired-capacity 7"
-          sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${env.ASGARN}"
+          sh "aws autoscaling set-desired-capacity --auto-scaling-group-name ${env.ASGARN} --desired-capacity 7 --region us-east-1"
+          sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${env.ASGARN} --region us-east-1"
           input 'Would you like to continue or abort?'
           sh 'ls -lah'
-          sh "aws autoscaling set-desired-capacity --auto-scaling-group-name ${env.ASGARN} --desired-capacity 8"
-          sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${env.ASGARN}"
+          sh "aws autoscaling set-desired-capacity --auto-scaling-group-name ${env.ASGARN} --desired-capacity 8 --region us-east-1"
+          sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${env.ASGARN} --region us-east-1"
         }
 
       }
