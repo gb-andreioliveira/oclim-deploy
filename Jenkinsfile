@@ -27,7 +27,6 @@ pipeline {
         }
       }
     }
-  }
   post {
     abort {
         sh 'ls -lah'
