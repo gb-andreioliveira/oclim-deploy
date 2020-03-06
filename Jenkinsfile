@@ -5,6 +5,10 @@ pipeline {
       steps {
         sh 'pwd'
         dir(path: '/var/lib/jenkins/workspace/oclim-terraform_master@2/provider/deploy_stack') {
+          sh 'pwd'
+        }
+
+        dir(path: '/var/lib/jenkins/workspace/oclim-terraform_master@2/provider/deploy_stack') {
           sh 'ls -lah'
           sh 'terraform apply -auto-approve'
           sh 'aws elbv2 modify-listener --listener-arn \\"${env.LISTERNERARN}\\" --default-actions \\"[{ "Type": "forward", "Order": 1, "ForwardConfig": { "TargetGroups": [ { "TargetGroupArn": "${env.OLDTGARN}", "Weight": 80 }, { "TargetGroupArn": "${env.NEWTGARN}", "Weight": 20 }, ] } }]\\"'
