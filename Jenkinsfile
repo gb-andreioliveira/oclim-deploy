@@ -3,7 +3,7 @@ pipeline {
   stages {
     stage('Deploy App') {
       steps {
-        dir(path: '/var/lib/jenkins/workspace/oclim-terraform_master@2/provider/deploy_stack') {
+        dir(path: '/var/lib/jenkins/workspace/oclim-terraform_master@2/provider/app_stack') {
           sh 'pwd'
           sh 'cat output.tf'
           sh 'ls -lah'
