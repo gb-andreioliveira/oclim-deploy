@@ -7,6 +7,7 @@ pipeline {
           sh 'pwd'
           sh 'cat output.tf'
           sh 'ls -lah'
+          sh 'export AWS_REGION=us-east-1'
           sh 'terraform output asg_arn'
           sh 'aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity 5'
           sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${env.ASGARN}"
