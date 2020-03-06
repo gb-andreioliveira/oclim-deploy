@@ -8,7 +8,8 @@ pipeline {
       steps {
         dir(path: '/var/lib/jenkins/workspace/oclim-terraform_master@2/provider/deploy_stack') {
           sh 'ls -lah'
-          sh "aws autoscaling set-desired-capacity --auto-scaling-group-name ${env.ASGARN} --desired-capacity 5"
+          sh 'terraform output asg_arn'
+          sh "aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity 5"
           sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${env.ASGARN}"
           input('Would you like to continue or abort?')
           sh 'ls -lah'
