@@ -5,6 +5,7 @@ pipeline {
       steps {
         dir(path: '/var/lib/jenkins/workspace/oclim-terraform_master@2/provider/deploy_stack') {
           sh 'pwd'
+          sh 'cat output.tf'
           sh 'ls -lah'
           sh 'terraform output asg_arn'
           sh 'aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity 5'
