@@ -3,6 +3,7 @@ pipeline {
   stages {
     stage('Deploy App') {
       steps {
+        sh 'pwd'
         dir(path: '/var/lib/jenkins/workspace/oclim-terraform_master@2/provider/deploy_stack') {
           sh 'ls -lah'
           sh 'terraform apply -auto-approve'
