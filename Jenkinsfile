@@ -33,7 +33,7 @@ pipeline {
                         for (instances = 5; instances < 9; instances++) {
                             def blue = 100-(100/instances)
                             def green = (100/instances)
-                            sh 'aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity ${instances} --region us-east-1'
+                            sh "aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity ${instances} --region us-east-1"
                             sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn` --region us-east-1"
                             input '${blue} % blue / ${green} % green environment. Would you like to continue or abort?'
                         }
