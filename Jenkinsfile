@@ -4,11 +4,6 @@ pipeline {
     stage('Deploy App') {
       steps {
         dir(path: '/var/lib/jenkins/workspace/oclim-terraform_master@2/provider/app_stack') {
-          sh 'pwd'
-          sh 'cat output.tf'
-          sh 'ls -lah'
-          sh 'export AWS_REGION=us-east-1'
-          sh 'terraform output asg_arn'
           for (int instances = 5; instances < 9; instances++) {
             def blue = 100-(100/i)
             def green = (100/i)
