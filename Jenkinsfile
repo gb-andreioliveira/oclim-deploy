@@ -26,6 +26,8 @@ pipeline {
         stage('Scale-out Green Instances') {
             steps {
                 dir(path: '/var/lib/jenkins/jobs/oclim-terraform/branches/master/workspace@2/provider/app_stack') {
+                    sh 'pwd'
+                    sh 'ls -lah'
                     script {
                         for (int instances = 5; instances < 9; instances++) {
                             def blue = 100-(100/i)
