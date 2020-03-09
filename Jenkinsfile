@@ -1,7 +1,7 @@
 
 def getCurrentInstance(String asgGroupName){
     String strInstanceIds = sh(
-        script: "aws autoscaling describe-auto-scaling-instances --region us-east-1  | jq -r '.AutoScalingInstances[] | select( .AutoScalingGroupName == \"$asgGroupName\") | .InstanceId'",
+        script: "aws autoscaling describe-auto-scaling-instances --region us-east-1  | jq -r '.AutoScalingInstances[] | select( .AutoScalingGroupName == \"${asgGroupName}\") | .InstanceId'",
         returnStatus: true
     )
 
@@ -47,6 +47,7 @@ pipeline {
         stage('Scale-in Blue Instances') {
             steps {
                 dir(path: '/var/lib/jenkins/jobs/oclim-terraform/branches/master/workspace@2/provider/app_stack') {
+                    sh "aws autoscaling describe-auto-scaling-instances --region us-east-1  | jq -r '.AutoScalingInstances[] | select( .AutoScalingGroupName == \"${asgGroupName}\") | .InstanceId'"
                     script {
                         for (int instances = 0; instances < 4; instances++) {
                             def blue = (int)(4-instances)/(8-instances)
