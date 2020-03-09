@@ -29,6 +29,7 @@ pipeline {
                     sh 'pwd'
                     sh 'ls -lah'
                     script {
+                        def instances = 5
                         for (int instances = 5; instances < 9; instances++) {
                             def blue = 100-(100/instances)
                             def green = (100/instances)
