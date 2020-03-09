@@ -33,8 +33,8 @@ pipeline {
                     script {
                         def instances = 5
                         for (instances = 5; instances < 9; instances++) {
-                            def green = (int)(((instances-4)/instances)*100)
-                            def blue = (int)(((instances-(instances-4))/instances)*100)
+                            def green = Math.round(((instances-4)/instances)*100)
+                            def blue = Math.round(((instances-(instances-4))/instances)*100)
 
                             sh "aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity ${instances} --region us-east-1 --no-honor-cooldown"
                             sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn` --region us-east-1"
@@ -51,7 +51,7 @@ pipeline {
                         for (int instances = 0; instances < 4; instances++) {
                             def blue = (int)(4-instances)/(8-instances)
                             def green = (int)((4+instances)/8)*100
-                            sh "aws autoscaling detach-instances --instance-ids ${asgInitialInstances[instances]} --auto-scaling-group-name `terraform output asg_arn` --should-decrement-desired-capacity --no-honor-cooldown --region us-east-1"
+                            sh "aws autoscaling detach-instances --instance-ids ${asgInitialInstances[instances]} --auto-scaling-group-name `terraform output asg_arn` --region us-east-1"
                             sh "aws ec2 terminate-instances --instance-ids ${asgInitialInstances[instances]} --region us-east-1"
                             input "${blue}% blue / ${green}% green environment. Would you like to continue or abort?"
                         }
