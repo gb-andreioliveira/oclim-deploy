@@ -30,7 +30,7 @@ pipeline {
                     sh 'ls -lah'
                     script {
                         def instances = 5
-                        for (int instances = 5; instances < 9; instances++) {
+                        for (instances = 5; instances < 9; instances++) {
                             def blue = 100-(100/instances)
                             def green = (100/instances)
                             sh 'aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity ${instances} --region us-east-1'
