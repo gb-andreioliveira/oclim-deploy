@@ -2,7 +2,7 @@
 def getCurrentInstance(String asgGroupName){
     String strInstanceIds = sh(
         script: "aws autoscaling describe-auto-scaling-instances --region us-east-1  | jq -r '.AutoScalingInstances[] | select( .AutoScalingGroupName == \"${asgGroupName}\") | .InstanceId'",
-        returnStatus: true
+        returnStdout: true
     )
 
     return strInstanceIds.split("\n")
