@@ -9,25 +9,19 @@ pipeline {
           sh 'ls -lah'
           sh 'export AWS_REGION=us-east-1'
           sh 'terraform output asg_arn'
-          sh 'aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity 5 --region us-east-1'
+          for (int instances = 5; instances < 9; instances++) {
+            def blue = 100-(100/i)
+            def green = (100/i)
+            sh 'aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity ${instances} --region us-east-1'
+            sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn` --region us-east-1"
+            input '${blue}% blue / ${green}% green environment. Would you like to continue or abort?'
+          }
+          sh "aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity 4 --region us-east-1"
           sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn` --region us-east-1"
-          input 'Would you like to continue or abort?'
-          sh 'ls -lah'
-          sh "aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity 6 --region us-east-1"
-          sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn` --region us-east-1"
-          input 'Would you like to continue or abort?'
-          sh 'ls -lah'
-          sh "aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity 7 --region us-east-1"
-          sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn` --region us-east-1"
-          input 'Would you like to continue or abort?'
-          sh 'ls -lah'
-          sh "aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity 8 --region us-east-1"
-          sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn` --region us-east-1"
+          sh 'echo "New environment setup sucessfully. Old instances are going to be decomissioned."'
         }
-
       }
     }
-
   }
   environment {
     ASGARN = "oclim-terraform-app"
