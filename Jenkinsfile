@@ -47,9 +47,9 @@ pipeline {
         stage('Scale-in Blue Instances') {
             steps {
                 dir(path: '/var/lib/jenkins/jobs/oclim-terraform/branches/master/workspace@2/provider/app_stack') {
-                    def str = getCurrentInstance(asgGroupName)
-                    sh "echo ${str}"
                     script {
+                        def str = getCurrentInstance(asgGroupName)
+                        sh "echo ${str}"
                         for (int instances = 0; instances < 4; instances++) {
                             def blue = (int)(4-instances)/(8-instances)
                             def green = (int)(((4+instances)/8)*100)
