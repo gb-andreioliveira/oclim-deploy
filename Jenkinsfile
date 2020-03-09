@@ -1,42 +1,67 @@
-def scale_loop() {
-    for (int instances = 5; instances < 9; instances++) {
-        def blue = 100-(100/i)
-        def green = (100/i)
-        sh 'aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity ${instances} --region us-east-1'
-        sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn` --region us-east-1"
-        input '${blue}% blue / ${green}% green environment. Would you like to continue or abort?'
-    }
+/*
+def getCurrentInstance(String asgGroupName){
+    String strInstanceIds = sh(
+        script: "aws autoscaling describe-auto-scaling-instances --region us-east-1  | jq -r '.AutoScalingInstances[] | select( .AutoScalingGroupName == \"$asgGroupName\") | .InstanceId'",
+        returnStatus: true
+    )
+
+    return strInstanceIds.split("\n")
 }
 
+String asgGroupName =  "oclim-app-terraform"
+
+def asgInitialInstances = []
+*/
+
 pipeline {
-  agent any
-  stages {
-    stage('Deploy App') {
-      steps {
-        dir(path: '/var/lib/jenkins/workspace/oclim-terraform_master@2/provider/app_stack') {
-          scale_loop()
-          sh "aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity 4 --region us-east-1"
-          sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn` --region us-east-1"
-          sh 'echo "New environment setup sucessfully. Old instances are going to be decomissioned."'
+    agent any
+    stages {
+        stage('Get Blue Instances') {
+            steps {
+                /*script{
+                    asgInitialInstances = getCurrentInstance(asgGroupName)
+                }*/
+            }
         }
-      }
+        stage('Scale-out Green Instances') {
+            steps {
+                dir(path: '/var/lib/jenkins/workspace/oclim-terraform_master@2/provider/app_stack') {
+                    script {
+                        for (int instances = 5; instances < 9; instances++) {
+                            def blue = 100-(100/i)
+                            def green = (100/i)
+                            sh 'aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity $instances --region us-east-1'
+                            sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn` --region us-east-1"
+                            input '$blue % blue / $green % green environment. Would you like to continue or abort?'
+                        }
+                    }
+                }
+            }
+        }
+        stage('Scale-in Blue Instances') {
+            /*script {
+                for (int instances = 0; instances < 4; instances++) {
+                    def blue = 100-(100/(4-i))
+                    def green = (100/(4-i))
+                    sh 'aws autoscaling detach-instances --instance-ids ${asgInitialInstances[i]} --auto-scaling-group-name `terraform output asg_arn` --should-decrement-desired-capacity --region us-east-1'
+                    input '$blue % blue / $green % green environment. Would you like to continue or abort?'
+                }
+            }*/
+            sh "aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity 4"
+            sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn`"
+            sh 'echo "Decomissioned Blue environment instances."'
+        }
     }
-  }
-  environment {
-    ASGARN = "oclim-terraform-app"
-  }
-  post {
-    aborted {
-      sh 'ls -lah'
-      sh "aws autoscaling set-desired-capacity --auto-scaling-group-name ${env.ASGARN} --desired-capacity 4"
-      sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${env.ASGARN}"
-      sh 'echo "Group has scaled back to original size"'
+    post {
+        aborted {
+              sh "aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity 4"
+              sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn`"
+              sh 'echo "Group has scaled back to original size"'
+        }
+        failure {
+              sh "aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity 4"
+              sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn`"
+              sh 'echo "Group has scaled back to original size"'
+        }
     }
-    failure {
-      sh 'ls -lah'
-      sh "aws autoscaling set-desired-capacity --auto-scaling-group-name ${env.ASGARN} --desired-capacity 4"
-      sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${env.ASGARN}"
-      sh 'echo "Group has scaled back to original size"'
-    }
-  }
 }
