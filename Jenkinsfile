@@ -30,7 +30,7 @@ pipeline {
                 dir(path: '/var/lib/jenkins/jobs/oclim-terraform/branches/master/workspace@2/provider/app_stack') {
                     sh 'pwd'
                     sh 'ls -lah'
-                    script {
+                    /*script {
                         def instances = 5
                         for (instances = 5; instances < 9; instances++) {
                             def green = (int)(((instances-4)/instances)*100)
@@ -40,7 +40,7 @@ pipeline {
                             sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn` --region us-east-1"
                             input "${blue}% blue / ${green}% green environment. Would you like to continue or abort?"
                         }
-                    }
+                    }*/
                 }
             }
         }
