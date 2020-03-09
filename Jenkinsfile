@@ -34,7 +34,7 @@ pipeline {
                         def instances = 5
                         for (instances = 5; instances < 9; instances++) {
                             def green = ((instances-4)/instances)*100
-                            def blue = (8)/instances)*100
+                            def blue = ((instances-green)/instances)*100
 
                             sh "aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity ${instances} --region us-east-1 --no-honor-cooldown"
                             sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn` --region us-east-1"
