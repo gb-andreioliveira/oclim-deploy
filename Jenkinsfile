@@ -49,7 +49,7 @@ pipeline {
                 dir(path: '/var/lib/jenkins/jobs/oclim-terraform/branches/master/workspace@2/provider/app_stack') {
                     script {
                         for (int instances = 0; instances < 4; instances++) {
-                            def blue = (int)(4-instances)/(8-instances)
+                            def blue = (int)(4-instances)/(8-instances)*100
                             def green = (int)(((4+instances)/8)*100)
                             sh "aws autoscaling detach-instances --instance-ids ${asgInitialInstances[instances]} --auto-scaling-group-name `terraform output asg_arn` --should-decrement-desired-capacity --region us-east-1"
                             sh "aws ec2 terminate-instances --instance-ids ${asgInitialInstances[instances]} --region us-east-1"
