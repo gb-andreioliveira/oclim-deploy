@@ -33,8 +33,8 @@ pipeline {
                     script {
                         def instances = 5
                         for (instances = 5; instances < 9; instances++) {
-                            def green = (((instances-4)/instances)*100).round()
-                            def blue = (((instances-(instances-4))/instances)*100).round()
+                            def green = (((instances-4d)/instances)*100d).round()
+                            def blue = (((instances-(instances-4d))/instances)*100d).round()
 
                             sh "aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity ${instances} --region us-east-1 --no-honor-cooldown"
                             sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn` --region us-east-1"
