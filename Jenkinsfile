@@ -25,7 +25,7 @@ pipeline {
         }*/
         stage('Scale-out Green Instances') {
             steps {
-                dir(path: '/var/lib/jenkins/workspace/oclim-terraform_master/provider/app_stack') {
+                dir(path: '/var/lib/jenkins/jobs/oclim-terraform/branches/master/workspace@2/provider/app_stack') {
                     script {
                         for (int instances = 5; instances < 9; instances++) {
                             def blue = 100-(100/i)
@@ -40,7 +40,7 @@ pipeline {
         }
         stage('Scale-in Blue Instances') {
             steps {
-                dir(path: '/var/lib/jenkins/workspace/oclim-terraform_master/provider/app_stack') {
+                dir(path: '/var/lib/jenkins/jobs/oclim-terraform/branches/master/workspace@2/provider/app_stack') {
                     /*script {
                         for (int instances = 0; instances < 4; instances++) {
                             def blue = 100-(100/(4-i))
@@ -58,14 +58,14 @@ pipeline {
     }
     post {
         aborted {
-            dir(path: '/var/lib/jenkins/workspace/oclim-terraform_master/provider/app_stack') {
+            dir(path: '/var/lib/jenkins/jobs/oclim-terraform/branches/master/workspace@2/provider/app_stack') {
                 sh "aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity 4 --region us-east-1"
                 sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn` --region us-east-1"
                 sh 'echo "Group has scaled back to original size"'
             }
         }
         failure {
-            dir(path: '/var/lib/jenkins/workspace/oclim-terraform_master/provider/app_stack') {
+            dir(path: '/var/lib/jenkins/jobs/oclim-terraform/branches/master/workspace@2/provider/app_stack') {
                 sh "aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity 4 --region us-east-1"
                 sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn` --region us-east-1"
                 sh 'echo "Group has scaled back to original size"'
