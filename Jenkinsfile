@@ -31,11 +31,12 @@ pipeline {
                     script {
                         def instances = 5
                         for (instances = 5; instances < 9; instances++) {
-                            def blue = 100-(100/instances)
-                            def green = (100/instances)
+                            def green = ((instances-4)/instances)*100
+                            def blue = ((instances-(green))/instances)*100
+
                             sh "aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity ${instances} --region us-east-1 --no-honor-cooldown"
                             sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn` --region us-east-1"
-                            input "${blue} %blue / ${green}% green environment. Would you like to continue or abort?"
+                            input "${blue}% blue / ${green}% green environment. Would you like to continue or abort?"
                         }
                     }
                 }
@@ -46,8 +47,8 @@ pipeline {
                 dir(path: '/var/lib/jenkins/jobs/oclim-terraform/branches/master/workspace@2/provider/app_stack') {
                     script {
                         for (int instances = 0; instances < 4; instances++) {
-                            def blue = 100-(100/(4-instances))
-                            def green = (100/(4-instances))
+                            def blue = (4-instances)/(8-instances)
+                            def green = ((4+instances)/8)*100
                             sh "aws autoscaling detach-instances --instance-ids ${asgInitialInstances[instances]} --auto-scaling-group-name `terraform output asg_arn` --should-decrement-desired-capacity --no-honor-cooldown --region us-east-1"
                             sh "aws ec2 terminate-instances --instance-ids ${asgInitialInstances[instances]} --region us-east-1"
                             input "${blue}% blue / ${green}% green environment. Would you like to continue or abort?"
