@@ -1,3 +1,13 @@
+def scale_loop() {
+    for (int instances = 5; instances < 9; instances++) {
+        def blue = 100-(100/i)
+        def green = (100/i)
+        sh 'aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity ${instances} --region us-east-1'
+        sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn` --region us-east-1"
+        input '${blue}% blue / ${green}% green environment. Would you like to continue or abort?'
+    }
+}
+
 pipeline {
   agent any
   stages {
@@ -22,23 +32,11 @@ pipeline {
       sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${env.ASGARN}"
       sh 'echo "Group has scaled back to original size"'
     }
-
     failure {
       sh 'ls -lah'
       sh "aws autoscaling set-desired-capacity --auto-scaling-group-name ${env.ASGARN} --desired-capacity 4"
       sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${env.ASGARN}"
       sh 'echo "Group has scaled back to original size"'
     }
-
   }
-}
-
-def scale_loop() {
-    for (int instances = 5; instances < 9; instances++) {
-            def blue = 100-(100/i)
-            def green = (100/i)
-            sh 'aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity ${instances} --region us-east-1'
-            sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn` --region us-east-1"
-            input '${blue}% blue / ${green}% green environment. Would you like to continue or abort?'
-          }
 }
