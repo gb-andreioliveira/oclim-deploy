@@ -40,30 +40,36 @@ pipeline {
         }
         stage('Scale-in Blue Instances') {
             steps {
-                /*script {
-                for (int instances = 0; instances < 4; instances++) {
-                    def blue = 100-(100/(4-i))
-                    def green = (100/(4-i))
-                    sh 'aws autoscaling detach-instances --instance-ids ${asgInitialInstances[i]} --auto-scaling-group-name `terraform output asg_arn` --should-decrement-desired-capacity --region us-east-1'
-                    input '$blue % blue / $green % green environment. Would you like to continue or abort?'
-                    }
-                }*/
-                sh "aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity 4"
-                sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn`"
-                sh 'echo "Decomissioned Blue environment instances."'
+                dir(path: '/var/lib/jenkins/workspace/oclim-terraform_master@2/provider/app_stack') {
+                    /*script {
+                        for (int instances = 0; instances < 4; instances++) {
+                            def blue = 100-(100/(4-i))
+                            def green = (100/(4-i))
+                            sh 'aws autoscaling detach-instances --instance-ids ${asgInitialInstances[i]} --auto-scaling-group-name `terraform output asg_arn` --should-decrement-desired-capacity --region us-east-1'
+                            input '$blue % blue / $green % green environment. Would you like to continue or abort?'
+                        }
+                    }*/
+                    sh "aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity 4 --region us-east-1"
+                    sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn` --region us-east-1"
+                    sh 'echo "Decomissioned Blue environment instances."'
+                }
             }
         }
     }
     post {
         aborted {
-              sh "aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity 4"
-              sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn`"
-              sh 'echo "Group has scaled back to original size"'
+            dir(path: '/var/lib/jenkins/workspace/oclim-terraform_master@2/provider/app_stack') {
+                sh "aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity 4"
+                sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn`"
+                sh 'echo "Group has scaled back to original size"'
+            }
         }
         failure {
-              sh "aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity 4"
-              sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn`"
-              sh 'echo "Group has scaled back to original size"'
+            dir(path: '/var/lib/jenkins/workspace/oclim-terraform_master@2/provider/app_stack') {
+                sh "aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity 4"
+                sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn`"
+                sh 'echo "Group has scaled back to original size"'
+            }
         }
     }
 }
