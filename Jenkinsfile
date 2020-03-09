@@ -49,8 +49,8 @@ pipeline {
                 dir(path: '/var/lib/jenkins/jobs/oclim-terraform/branches/master/workspace@2/provider/app_stack') {
                     script {
                         for (int instances = 0; instances < 4; instances++) {
-                            def blue = (4-instances)/(8-instances).setScale(0. RoundingMode.ROUND_FLOOR)
-                            def green = (((4+instances)/8)*100).setScale(0. RoundingMode.ROUND_FLOOR)
+                            def blue = (4-instances)/(8-instances).setScale(0. ROUND_FLOOR)
+                            def green = (((4+instances)/8)*100).setScale(0. ROUND_FLOOR)
                             sh "aws autoscaling detach-instances --instance-ids ${asgInitialInstances[instances]} --auto-scaling-group-name `terraform output asg_arn` --region us-east-1"
                             sh "aws ec2 terminate-instances --instance-ids ${asgInitialInstances[instances]} --region us-east-1"
                             input "${blue}% blue / ${green}% green environment. Would you like to continue or abort?"
