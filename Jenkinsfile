@@ -19,6 +19,7 @@ pipeline {
         stage('Get Blue Instances') {
             steps {
                 dir(path: '/var/lib/jenkins/jobs/oclim-terraform/branches/master/workspace@2/provider/app_stack') {
+                    sh 'terraform init'
                     script {
                         asgInitialInstances = getCurrentInstance(asgGroupName)
                     }
