@@ -40,8 +40,6 @@ pipeline {
                             sh "aws autoscaling set-desired-capacity --auto-scaling-group-name `terraform output asg_arn` --desired-capacity ${instances} --region us-east-1 --no-honor-cooldown"
                             sh "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name `terraform output asg_arn` --region us-east-1"
                             sh 'aws s3 cp s3://oclim-terraform-s3-bucket/test-reports/ . --recursive'
-                            junit '*.xml'
-                            echo 'Test info has been updated.'
                             input "${blue}% blue / ${green}% green environment. Would you like to continue or abort?"
                         }
                     }
@@ -57,8 +55,6 @@ pipeline {
                             def green = (int)(((4+instances)/8)*100)
                             sh "aws autoscaling detach-instances --instance-ids ${asgInitialInstances[instances]} --auto-scaling-group-name `terraform output asg_arn` --should-decrement-desired-capacity --region us-east-1"
                             sh "aws ec2 terminate-instances --instance-ids ${asgInitialInstances[instances]} --region us-east-1"
-                            junit '*.xml'
-                            echo 'Test info has been updated.'
                             input "${blue}% blue / ${green}% green environment. Would you like to continue or abort?"
                         }
                     }
